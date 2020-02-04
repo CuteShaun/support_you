@@ -1,33 +1,34 @@
 (function() {
+  const backgrounds = [
+    "first-background",
+    "second-background",
+    "third-background"
+  ];
+
   const changeOpacity = () => {
     const elem = document.getElementById("wrapper-inner");
     elem.style.opacity = "0";
   };
 
-  const changeImageByTime = timeNow => {
-    const elem = document.getElementsByTagName("body")[0];
-
-    switch (true) {
-      case timeNow >= 8 && timeNow <= 16:
-        elem.classList.add("first-background");
-        break;
-
-      case timeNow >= 16 && timeNow <= 24:
-        elem.classList.add("second-background");
-        break;
-
-      case timeNow >= 0 && timeNow <= 8:
-        elem.classList.add("third-background");
-        break;
-      default:
-        elem.classList.add("first-background");
-    }
+  const getRandomInt = max => {
+    return Math.floor(Math.random() * Math.floor(max));
   };
 
-  const getTime = () => {
-    const today = new Date();
-    const timeNow = today.getHours();
-    changeImageByTime(timeNow);
+  const changeImageByTime = () => {
+    const elem = document.getElementsByTagName("body")[0];
+    if (localStorage) {
+      let timerValue = localStorage.getItem("timerValue");
+      if (!timerValue) {
+        timerValue = new Date().toString();
+        localStorage.setItem("timerValue", timerValue);
+      }
+
+      let diff = new Date().getTime() - new Date(timerValue).getTime();
+      if (diff >= 1000 * 60 * 60 * 8) {
+        localStorage.setItem("timerValue", new Date().toString());
+        elem.classList.add(backgrounds[getRandomInt(3)]);
+      }
+    }
   };
 
   const animate = () => {
@@ -40,7 +41,7 @@
     elem.classList.add("reset-transform");
   };
 
-  getTime();
+  changeImageByTime();
 
   window.onload = function() {
     changeOpacity();
